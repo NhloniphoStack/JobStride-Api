@@ -1,5 +1,7 @@
 import { db } from '../db/db.js'
 import validator from 'validator'
+import bcrypt from 'bcryptjs'
+
 
 export async function login(req, res){
    console.log("attempt to login")
@@ -28,9 +30,11 @@ export async function login(req, res){
     
     const dbPassword = dbPasswordData?.rows[0]?.password
 
-    if(dbPassword !== password){
-      return res.status(400).json({error: "Password doesnt match!"})
-    }
+   const verifyhash =  await bcrypt.compare(password, dbPassword)
+
+   if(!verifyhash){
+    return res.status(400).json({error: "Incorrect username or password"})
+   }
 
     const userID = dbData?.rows[0]?.id
 
@@ -56,6 +60,8 @@ export async function signup(req, res){
 
     const checkEmail = validator.isEmail(email)
 
+    
+
     if(!checkEmail){
         return res.status(400).json({error: 'Invalid email format'})
     }
@@ -64,6 +70,7 @@ export async function signup(req, res){
         return res.status(400).json({error: 'Invalid username format'})
     }
 
+    password = await bcrypt.hash(password, 10)
     name = name.trim();
     username = username.trim()
     email = email.trim()
@@ -77,7 +84,7 @@ export async function signup(req, res){
     }
 
     
-
+   
 
    const results = await db.query(`INSERT INTO users (name, username, password, email, created_at)
         VALUES ($1, $2, $3, $4, $5) 
