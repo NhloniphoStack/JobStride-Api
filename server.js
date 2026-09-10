@@ -9,7 +9,7 @@ import cors from 'cors';
 
 dotenv.config()
 
-console.log("Exist:", process.env.DATABASE_URL )
+
 
 const PORT = 8000
 
