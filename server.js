@@ -25,6 +25,7 @@ app.use(cors({
 app.use(express.json())
 
 
+app.use('trust proxy', 1)
 
 app.use(session({
     secret: process.env.SUPER_SECRET_KEY,
@@ -32,7 +33,7 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: 'none'
     }
 }))
